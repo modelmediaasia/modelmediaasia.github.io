@@ -3,11 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <title>Modern Portfolio</title>
 </head>
 <body>
-    <h1>Welcome to My Personal Page</h1>
-    <p>Current Date and Time: 2026-03-23 21:04:06 UTC</p>
-    <p>Hello! I am modelmediaasia, and this is my personal webpage. Feel free to explore!</p>
+
+    <nav class="navbar">
+        <div class="logo">My Portfolio</div>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero">
+        <h1>Welcome to My Portfolio</h1>
+        <p>Your success is my priority!</p>
+        <a href="#contact" class="cta-button">Get in Touch</a>
+    </header>
+
+    <section id="about">
+        <h2>About Me</h2>
+        <p>I am a passionate developer with skills in various technologies.</p>
+        <div class="skills">
+            <div class="skill">HTML</div>
+            <div class="skill">CSS</div>
+            <div class="skill">JavaScript</div>
+        </div>
+    </section>
+
+    <section id="services">
+        <h2>My Services</h2>
+        <div class="feature-card">
+            <h3>Web Development</h3>
+            <p>Building responsive and modern websites.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Graphic Design</h3>
+            <p>Creating stunning visuals for your brand.</p>
+        </div>
+        <div class="feature-card">
+            <h3>SEO Optimization</h3>
+            <p>Improving your website's visibility on search engines.</p>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Me</h2>
+        <p>Connect with me on social media!</p>
+        <div class="social-links">
+            <a href="#">Twitter</a>
+            <a href="#">LinkedIn</a>
+            <a href="#">GitHub</a>
+        </div>
+    </section>
+
+    <script src="scripts.js"></script>
 </body>
 </html>
