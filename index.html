@@ -95,11 +95,22 @@
             line-height: 1.8;
         }
 
+        .bookmark-notice {
+            display: inline-block;
+            margin-top: 18px !important;
+            padding: 10px 16px;
+            border: 1px solid rgba(37, 99, 235, .18);
+            border-radius: 12px;
+            background: #eff6ff;
+            color: #1e40af !important;
+            font-weight: 650;
+        }
+
         .publish-link {
             color: var(--blue);
-            font-weight: 600;
+            font-weight: 750;
             text-decoration: underline;
-            text-decoration-color: rgba(37, 99, 235, .3);
+            text-decoration-color: rgba(37, 99, 235, .5);
             text-underline-offset: 3px;
         }
 
@@ -217,6 +228,12 @@
         }
 
         .domain-type {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .domain-updated {
+            margin-top: 4px;
             color: var(--muted);
             font-size: 11px;
         }
@@ -427,8 +444,8 @@
         <header class="header">
             <div class="header-badge">ModelMedia 官方域名</div>
             <h1>麻豆传媒 ModelMedia</h1>
-            <p>
-                建议收藏网址发布页
+            <p class="bookmark-notice">
+                请务必收藏网址发布页
                 <a class="publish-link tracked-link" id="publishPageLink" href="https://mdgirl.site">https://mdgirl.site</a>，
                 最新地址会在这里更新。
             </p>
@@ -489,7 +506,8 @@
                 const domainMain = createElement('div', 'domain-main', '');
                 domainMain.append(
                     createElement('div', 'domain-name', domain.name),
-                    createElement('div', 'domain-type', domain.type)
+                    createElement('div', 'domain-type', domain.type),
+                    createElement('div', 'domain-updated', `更新于 ${domain.updatedAt}`)
                 );
 
                 const domainInfo = createElement('div', 'domain-info', '');
