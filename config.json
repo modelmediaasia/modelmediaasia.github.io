@@ -1,0 +1,39 @@
+{
+  "publishPageUrl": "https://mdgirl.site",
+  "domains": [
+    {
+      "url": "https://modelmedia.asia",
+      "name": "modelmedia.asia",
+      "type": "永久域名",
+      "localEnable": false,
+      "tags": [
+        {
+          "label": "永久域名",
+          "color": "blue"
+        },
+        {
+          "label": "国际线路",
+          "color": "purple"
+        }
+      ],
+      "description": "ModelMedia 官方永久域名与国际访问线路。"
+    },
+    {
+      "url": "https://modelmedia.site",
+      "name": "modelmedia.site",
+      "type": "最新全球可访问线路",
+      "localEnable": true,
+      "tags": [
+        {
+          "label": "最新线路",
+          "color": "green"
+        },
+        {
+          "label": "全球可访问",
+          "color": "blue"
+        }
+      ],
+      "description": "当前最新发布的全球访问线路，访问受限时可优先尝试。"
+    }
+  ]
+}
