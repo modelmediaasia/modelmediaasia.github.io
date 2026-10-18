@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -410,6 +411,7 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
+
             *,
             *::before,
             *::after {
@@ -419,6 +421,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="page">
         <header class="header">
@@ -426,7 +429,7 @@
             <h1>麻豆传媒 ModelMedia</h1>
             <p>
                 建议收藏网址发布页
-                <a class="publish-link tracked-link" href="https://mdgirl.site">https://mdgirl.site</a>，
+                <a class="publish-link tracked-link" id="publishPageLink" href="https://mdgirl.site">https://mdgirl.site</a>，
                 最新地址会在这里更新。
             </p>
             <p class="utm-info" id="utmInfo" hidden>来源参数已保留到访问链接</p>
@@ -442,44 +445,10 @@
                             <p>选择线路进入 ModelMedia</p>
                         </div>
                     </div>
-                    <div class="domain-count">共 2 条线路</div>
+                    <div class="domain-count" id="domainCount"></div>
                 </div>
 
-                <div class="domain-list">
-                    <a class="domain-item tracked-link" href="https://modelmedia.asia">
-                        <div class="domain-main">
-                            <div class="domain-name">modelmedia.asia</div>
-                            <div class="domain-type">永久域名</div>
-                        </div>
-                        <div class="domain-info">
-                            <div class="tags">
-                                <span class="tag tag-blue">永久域名</span>
-                                <span class="tag tag-purple">国际线路</span>
-                            </div>
-                            <div class="domain-description">ModelMedia 官方永久域名与国际访问线路。</div>
-                        </div>
-                        <div class="domain-action">
-                            <span class="visit-btn">访问 <span class="arrow" aria-hidden="true">→</span></span>
-                        </div>
-                    </a>
-
-                    <a class="domain-item tracked-link" href="https://modelmedia.site">
-                        <div class="domain-main">
-                            <div class="domain-name">modelmedia.site</div>
-                            <div class="domain-type">最新全球可访问线路</div>
-                        </div>
-                        <div class="domain-info">
-                            <div class="tags">
-                                <span class="tag tag-green">最新线路</span>
-                                <span class="tag tag-blue">全球可访问</span>
-                            </div>
-                            <div class="domain-description">当前最新发布的全球访问线路，访问受限时可优先尝试。</div>
-                        </div>
-                        <div class="domain-action">
-                            <span class="visit-btn">访问 <span class="arrow" aria-hidden="true">→</span></span>
-                        </div>
-                    </a>
-                </div>
+                <div class="domain-list" id="domainList" aria-live="polite"></div>
             </section>
         </main>
 
@@ -487,6 +456,69 @@
     </div>
 
     <script>
+        const tagColors = new Set(['blue', 'green', 'purple']);
+
+        function requireWebUrl(value, fieldName) {
+            const url = new URL(value);
+            if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+                throw new Error(`${fieldName} 必须使用 HTTP 或 HTTPS 地址`);
+            }
+            return url.toString();
+        }
+
+        function createElement(tagName, className, text) {
+            const element = document.createElement(tagName);
+            element.className = className;
+            element.textContent = text;
+            return element;
+        }
+
+        function renderDomains(domains) {
+            const domainList = document.getElementById('domainList');
+            const fragment = document.createDocumentFragment();
+
+            domains.forEach(domain => {
+                const domainUrl = requireWebUrl(domain.url, '域名 URL');
+                if (!Array.isArray(domain.tags)) {
+                    throw new Error(`${domain.name || domain.url} 的 tags 必须是数组`);
+                }
+
+                const link = createElement('a', 'domain-item tracked-link', '');
+                link.href = domainUrl;
+
+                const domainMain = createElement('div', 'domain-main', '');
+                domainMain.append(
+                    createElement('div', 'domain-name', domain.name),
+                    createElement('div', 'domain-type', domain.type)
+                );
+
+                const domainInfo = createElement('div', 'domain-info', '');
+                const tags = createElement('div', 'tags', '');
+                domain.tags.forEach(tag => {
+                    if (!tagColors.has(tag.color) || typeof tag.label !== 'string') {
+                        throw new Error(`${domain.name || domain.url} 含有无效标签配置`);
+                    }
+                    tags.append(createElement('span', `tag tag-${tag.color}`, tag.label));
+                });
+                domainInfo.append(
+                    tags,
+                    createElement('div', 'domain-description', domain.description)
+                );
+
+                const action = createElement('div', 'domain-action', '');
+                const visitButton = createElement('span', 'visit-btn', '访问 ');
+                visitButton.append(createElement('span', 'arrow', '→'));
+                visitButton.lastElementChild.setAttribute('aria-hidden', 'true');
+                action.append(visitButton);
+
+                link.append(domainMain, domainInfo, action);
+                fragment.append(link);
+            });
+
+            domainList.replaceChildren(fragment);
+            document.getElementById('domainCount').textContent = `共 ${domains.length} 条线路`;
+        }
+
         function initializeUTMTracking() {
             const params = new URLSearchParams(window.location.search);
             const utmParams = [...params.entries()].filter(([key]) =>
@@ -506,19 +538,37 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', initializeUTMTracking);
+        async function initializePage() {
+            const domainList = document.getElementById('domainList');
+            try {
+                const response = await fetch('./config.json', { cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error(`加载 config.json 失败（HTTP ${response.status}）`);
+                }
+
+                const config = await response.json();
+                if (!Array.isArray(config.domains) || config.domains.length === 0) {
+                    throw new Error('config.json 的 domains 必须是非空数组');
+                }
+
+                const publishPageUrl = requireWebUrl(config.publishPageUrl, '网址发布页 URL');
+                const publishPageLink = document.getElementById('publishPageLink');
+                publishPageLink.href = publishPageUrl;
+                publishPageLink.textContent = new URL(publishPageUrl).host;
+                renderDomains(config.domains);
+                initializeUTMTracking();
+            } catch (error) {
+                console.error('无法加载域名配置：', error);
+                domainList.replaceChildren(
+                    createElement('p', 'domain-description', '线路配置加载失败，请稍后重试。')
+                );
+            }
+        }
+
+        initializePage();
     </script>
 
-    <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-xOGdmkMUYUlK7_nQspFMM.js"></script>
-    <script>
-        window.plausible = window.plausible || function () {
-            (plausible.q = plausible.q || []).push(arguments);
-        };
-        window.plausible.init = window.plausible.init || function (i) {
-            window.plausible.o = i || {};
-        };
-        window.plausible.init();
-    </script>
+    <script async src="https://plausible.autolinks.site/api/loader/mdgirl.js"></script>
 </body>
+
 </html>
